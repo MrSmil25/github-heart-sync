@@ -18,7 +18,10 @@ export function MyRoomAuth({ view = "login" }: { view?: "intro" | "login" }) {
   const handleRef = useRef<MyRoomHandle | null>(null);
   const submittingRef = useRef(false);
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
   useEffect(() => {
     if (!mounted) return;
     const host = hostRef.current;
@@ -85,12 +88,17 @@ export function MyRoomAuth({ view = "login" }: { view?: "intro" | "login" }) {
     const api = createMyRoom(host, {
       initialOpen: view === "login",
       ...(view === "intro" ? { onEnter: () => void navigate({ to: "/login" }) } : {}),
+      // Di halaman login, "Kembali" harus balik ke Landing lewat router.
+      ...(view === "login" ? { onBack: () => void navigate({ to: "/" }) } : {}),
       onSubmit: (payload) => void handleSubmit(payload),
     });
     handleRef.current = api;
 
     return () => {
       handleRef.current = null;
+      submittingRef.current = false;
+      // destroy() menghentikan rAF loop, membatalkan fetch, melepas listener
+      // dokumen/media, memutus observer, dan membebaskan konteks WebGL.
       api.destroy();
     };
   }, [mounted, navigate, view]);
