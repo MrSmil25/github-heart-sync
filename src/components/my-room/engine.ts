@@ -22,6 +22,10 @@ export type MyRoomSubmit = {
 export type MyRoomOptions = {
   onSubmit: (payload: MyRoomSubmit) => void;
   onEnter?: () => void;
+  // Dipakai di halaman login: tombol "Kembali" harus kembali ke Landing lewat
+  // router, bukan menutup panel (intro disembunyikan di sana, jadi menutup
+  // panel meninggalkan layar kosong yang tidak bisa diklik = "freeze").
+  onBack?: () => void;
   initialOpen?: boolean;
 };
 
@@ -302,9 +306,16 @@ export function createMyRoom(root: HTMLElement, options: MyRoomOptions): MyRoomH
     }
     begin(true);
   });
-  back.addEventListener("click", () => begin(false));
+  const goBack = () => {
+    if (options.onBack) {
+      options.onBack();
+      return;
+    }
+    begin(false);
+  };
+  back.addEventListener("click", goBack);
   const onKeydown = (e: KeyboardEvent) => {
-    if (e.key === "Escape" && opened && !busy) begin(false);
+    if (e.key === "Escape" && opened && !busy) goBack();
   };
   document.addEventListener("keydown", onKeydown);
   hit.addEventListener("pointerdown", (e) => {
