@@ -49,7 +49,7 @@ void main() {
   float perspective = uDepth / (uDepth - p.z * uSize);
   vec2 screen = uCenter + vec2(p.x, -p.y) * uSize * perspective;
   gl_Position = vec4(screen.x / uViewport.x * 2.0 - 1.0, 1.0 - screen.y / uViewport.y * 2.0, 0.0, 1.0);
-  vUv = uUv;
+  vUv = aUv;
   vShade = .74 + .26 * abs(cy);
 }`;
 
@@ -287,6 +287,7 @@ export function createMyRoomEngine(
       { texture: first, sample: brandCanvas },
       { texture: second, sample: neutralCanvas },
     ];
+    stage.classList.add("mr-webgl-ready");
     particles = [...sampleCanvas(brandCanvas, 0), ...sampleCanvas(neutralCanvas, 1)];
     schedule();
   };
@@ -501,6 +502,7 @@ export function createMyRoomEngine(
       sprites = null;
       particles = [];
       transitionDone = null;
+      stage.classList.remove("mr-webgl-ready");
     },
   };
 }

@@ -147,6 +147,8 @@ export function MyRoomAuth({ view = "login" }: { view?: "intro" | "login" }) {
   useEffect(() => {
     const initialTheme = readInitialTheme();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.documentElement.classList.toggle("dark", initialTheme === "dark");
+    document.documentElement.style.colorScheme = initialTheme;
     setTheme(initialTheme);
     setPaused(reducedMotion);
     setReady(true);
